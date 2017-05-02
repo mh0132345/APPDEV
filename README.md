@@ -61,12 +61,12 @@ OVERVIEW:
 	a) Run "./sound.a" to run the program
 	b) Open file "wave.h" and add line "#define DEBUG" to view in DEBUG mode. You can see the file WAV header. 
 	c) Open file "comm.h" and add line "#define COMM" to view in COMM  mode. Your program will send the record information to the server.
-	d) To view the visualization, use php file include in the source code foleder.
+	d) To view the visualization, use file "display.html" include in the source code folder. You can also check here http://www.cc.puv.fi/~e1601133/display.html. There are two modes of display: online mode and review mode.
 	e) To stop the program: press Crtl+C or Crtl+Z
 
 4. Files include in this project:
 	main.c	wave.c	wave.h	comm.h	comm.c	screen.h  screen.c  makefile README.md
-
+   Files to display online: sound.php display.html
 5. Coppyright and licensing information:
 	This is a open source project. No coppyright and licensing
 
