@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html>
+<head><title>Display</title></head>
+<body>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<script>	
+	d3.text("http://www.cc.puv.fi/~e1601133/sound_log.txt", function(error, text) {
+		if (error) throw error;
+		//Getting time and data
+		line = text.split("\n");
+		date = []; num =[];
+		for (i=0;i<line.length-1;i++){
+			
+			data = line[i].split(",");
+			date.push(data[0]);
+			
+			arr = data[1].split(";");
+			num.push(arr);
+		}
+		
+		//check if device is online
+		crr_time =  Date.now();
+		time = new Date(date[date.length-1]);
+		time = time.getTime();
+		online = 0;
+		if(crr_time - time < 2000) online = 1;
+		
+		//if device is online, take the last line and display
+		if (online ==1){
+			document.write("<p>The device is online</p>");
+			document.write("<p>"+date[date.length-1] +"</p>");
+			
+			display(num[num.length-1]); //display the last data
+			setTimeout("location.reload()",1000); //reload to get data and check again
+		}
+		else {
+			document.write("<p>The device is offline</p>");
+			document.write("<p>Enter the review mode. Please choose the time</p><br>");
+			
+			//Create a select list
+			var select = d3.select('body')
+					.append('select')
+					.attr('class','select')
+					.on('change',onchange)
+			
+			var options = select
+				.selectAll('option')
+				.data(date).enter()
+				.append('option')
+				.text(function (d) { return d; });
+			//Display first value of data
+			display(num[0]);
+			//If users change the time, redraw the graph.
+			function onchange() {
+				selectValue = d3.select('select').property('value') //Get the choosen value
+				index = date.indexOf(selectValue);
+				d3.selectAll("svg").remove(); //Remove old graph
+				display(num[index]); //Draw the graph again
+			};
+		}
+			
+	});
+	//Display graph of any array
+	function display(dataset){
+			var w = 800;
+			var h = 450;
+						
+			var xScale = d3.scale.ordinal()
+							.domain(d3.range(dataset.length))
+							.rangeRoundBands([0, w], 0.05);
+
+			var yScale = d3.scale.linear()
+							.domain([0, d3.max(dataset)])
+							.range([0, h]);
+			
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			//Create bars
+			svg.selectAll("rect")
+			   .data(dataset)
+			   .enter()
+			   .append("rect")
+			   .attr("x", function(d, i) {
+			   		return xScale(i);
+			   })
+			   .attr("y", function(d) {
+			   		return h - yScale(d);
+			   })
+			   .attr("width", xScale.rangeBand())
+			   .attr("height", function(d) {
+			   		return yScale(d);
+			   })
+			   .attr("fill", "blue");
+
+			//Create labels
+			svg.selectAll("text")
+			   .data(dataset)
+			   .enter()
+			   .append("text")
+			   .text(function(d) {
+			   		return d;
+			   })
+			   .attr("text-anchor", "middle")
+			   .attr("x", function(d, i) {
+			   		return xScale(i) + xScale.rangeBand() / 2;
+			   })
+			   .attr("y", function(d) {
+			   		return h - yScale(d) + 14;
+			   })
+			   .attr("font-family", "sans-serif")
+			   .attr("font-size", "11px")
+			   .attr("fill", "white");
+	}
+	
+</script>
+</body>
+</html>
